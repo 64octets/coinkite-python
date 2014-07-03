@@ -68,7 +68,7 @@ else:
     else:
         if (major, minor, patch) < (0, 8, 8):
             sys.stderr.write(
-                'Warning: the Stripe library requires that your Python '
+                'Warning: http_client.py requires that your Python '
                 '"requests" library be newer than version 0.8.8, but your '
                 '"requests" library is version %s. Stripe will fall back to '
                 'an alternate HTTP library so everything should work. We '
@@ -94,7 +94,7 @@ def new_default_http_client(*args, **kwargs):
     else:
         impl = Urllib2Client
         warnings.warn(
-            "Warning: the Stripe library is falling back to urllib2/urllib "
+            "Warning: http_client.py is falling back to urllib2/urllib "
             "because neither requests nor pycurl are installed. "
             "urllib2's SSL implementation doesn't verify server "
             "certificates. For improved security, we suggest installing "
@@ -155,15 +155,12 @@ class RequestsClient(HTTPClient):
 
     def _handle_request_error(self, e):
         if isinstance(e, requests.exceptions.RequestException):
-            msg = ("Unexpected error communicating with Stripe.  "
-                   "If this problem persists, let us know at "
-                   "support@stripe.com.")
+            msg = ("Unexpected error communicating with backend.")
             err = "%s: %s" % (type(e).__name__, str(e))
         else:
-            msg = ("Unexpected error communicating with Stripe. "
+            msg = ("Unexpected error communicating with backend. "
                    "It looks like there's probably a configuration "
-                   "issue locally.  If this problem persists, let us "
-                   "know at support@stripe.com.")
+                   "issue locally. ")
             err = "A %s was raised" % (type(e).__name__,)
             if str(e):
                 err += " with error message %s" % (str(e),)
@@ -183,11 +180,10 @@ class UrlFetchClient(HTTPClient):
                 method=method,
                 headers=headers,
                 # Google App Engine doesn't let us specify our own cert bundle.
-                # However, that's ok because the CA bundle they use recognizes
-                # api.stripe.com.
+                # Hopefully, that's ok because the CA bundle they use is complete?
                 validate_certificate=self._verify_ssl_certs,
                 # GAE requests time out after 60 seconds, so make sure we leave
-                # some time for the application to handle a slow Stripe
+                # some time for the application to handle a slow backend
                 deadline=55,
                 payload=post_data
             )
@@ -198,19 +194,15 @@ class UrlFetchClient(HTTPClient):
 
     def _handle_request_error(self, e, url):
         if isinstance(e, urlfetch.InvalidURLError):
-            msg = ("The Stripe library attempted to fetch an "
-                   "invalid URL (%r). This is likely due to a bug "
-                   "in the Stripe Python bindings. Please let us know "
-                   "at support@stripe.com." % (url,))
+            msg = ("The library attempted to fetch an "
+                   "invalid URL (%r)! " % (url,))
         elif isinstance(e, urlfetch.DownloadError):
-            msg = "There was a problem retrieving data from Stripe."
+            msg = "There was a problem retrieving data from backend."
         elif isinstance(e, urlfetch.ResponseTooLargeError):
             msg = ("There was a problem receiving all of your data from "
-                   "Stripe.  This is likely due to a bug in Stripe. "
-                   "Please let us know at support@stripe.com.")
+                   "the backend.")
         else:
-            msg = ("Unexpected error communicating with Stripe. If this "
-                   "problem persists, let us know at support@stripe.com.")
+            msg = ("Unexpected error communicating with backend. ")
 
         msg = textwrap.fill(msg) + "\n\n(Network error: " + str(e) + ")"
         raise CKAPIConnectionError(msg)
@@ -258,20 +250,14 @@ class PycurlClient(HTTPClient):
         if e[0] in [pycurl.E_COULDNT_CONNECT,
                     pycurl.E_COULDNT_RESOLVE_HOST,
                     pycurl.E_OPERATION_TIMEOUTED]:
-            msg = ("Could not connect to Stripe.  Please check your "
-                   "internet connection and try again.  If this problem "
-                   "persists, you should check Stripe's service status at "
-                   "https://twitter.com/stripestatus, or let us know at "
-                   "support@stripe.com.")
+            msg = ("Could not connect to backend.  Please check your "
+                   "internet connection and try again.")
         elif (e[0] in [pycurl.E_SSL_CACERT,
                        pycurl.E_SSL_PEER_CERTIFICATE]):
-            msg = ("Could not verify Stripe's SSL certificate.  Please make "
-                   "sure that your network is not intercepting certificates.  "
-                   "If this problem persists, let us know at "
-                   "support@stripe.com.")
+            msg = ("Could not verify SSL certificate.  Please make "
+                   "sure that your network is not intercepting certificates!")
         else:
-            msg = ("Unexpected error communicating with Stripe. If this "
-                   "problem persists, let us know at support@stripe.com.")
+            msg = ("Unexpected error communicating with backend. ")
 
         msg = textwrap.fill(msg) + "\n\n(Network error: " + e[1] + ")"
         raise error.CKAPIConnectionError(msg)
@@ -304,7 +290,8 @@ class Urllib2Client(HTTPClient):
         return rbody, rcode
 
     def _handle_request_error(self, e):
-        msg = ("Unexpected error communicating with Stripe. "
-               "If this problem persists, let us know at support@stripe.com.")
+        msg = ("Unexpected error communicating with backend. ")
         msg = textwrap.fill(msg) + "\n\n(Network error: " + str(e) + ")"
         raise CKAPIConnectionError(msg)
+
+# EOF

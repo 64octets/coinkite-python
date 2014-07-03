@@ -29,4 +29,5 @@ __version__ = '0.1'
 from requestor import CKRequestor
 
 from objs import *
+from exc import *
 

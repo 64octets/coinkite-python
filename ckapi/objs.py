@@ -1,5 +1,3 @@
-
-
 #
 # Wrappers for Coinkite objects which you might see.
 #
@@ -39,16 +37,11 @@ CK_DB_OBJECTS = [
 
 __all__ = CK_DB_OBJECTS + ['CKDBObject']
 
-class CKDBObject(dict):
-    #
-    # Act like a dictionary, but also an object. Keys are attributes, attributes
-    # are keys and so on.
-    #
-    _CK_type = None
-
-    @property
-    def ref_number(self):
-        return self.CK_refnum
+class CKObject(dict):
+    '''
+        Act like a dictionary, but also an object. Keys are attributes, attributes
+        are keys and so on.
+    '''
 
     def __getattr__(self, name):
         if name in self:
@@ -64,10 +57,36 @@ class CKDBObject(dict):
         del self[name]
 
     def __repr__(self):
+        ret =  '<%s:' % self.__class__.__name__
+        for k,v in self.items():
+            ret += ' %s=%r' % (k, v)
+        return ret + '>'
+
+class CKDBObject(CKObject):
+    "This object is a proxy for a database object in Coinkite"
+    _CK_type = None
+
+    @property
+    def ref_number(self):
+        return self.CK_refnum
+
+    def __repr__(self):
         ret =  '<%s:' % self.get('CK_type', self._CK_type or self.__class__.__name__)
         for k,v in self.items():
             ret += ' %s=%r' % (k, v)
         return ret + '>'
+
+
+def make_db_object(d):
+    # given a dict straight from the JSON, return a more functional object
+    # which maybe a proxy or wrapper version object.
+    cls = d.get('CK_type', None)
+
+    if not cls or cls not in CK_DB_OBJECTS:
+        return CKObject(d)
+
+    # Return a CKUser (for example) if the incoming data looks like one
+    return globals()[cls](d)
 
 # Declare a trival subclass of CKDBObject() for each of those names.
 #
