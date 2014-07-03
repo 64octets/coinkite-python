@@ -70,6 +70,10 @@ class CKDBObject(CKObject):
     def ref_number(self):
         return self.CK_refnum
 
+    def __str__(self):
+        # useful when used as a argument to another API call.
+        return self.ref_number
+
     def __repr__(self):
         ret =  '<%s:' % self.get('CK_type', self._CK_type or self.__class__.__name__)
         for k,v in self.items():
