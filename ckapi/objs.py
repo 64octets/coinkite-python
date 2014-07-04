@@ -3,39 +3,15 @@
 #
 
 CK_DB_OBJECTS = [
-    'CKUser',
-    'CKEvent',
-    'CKUserRequest',
-    'CKCard',
-    'CKActivityLog',
-    'CKMagicCoin',
-    'CKEmailAddress',
-    'CKInvoice',
-    'CKReqSend',
-    'CKAccount',
-    'CKReqReceive',
-    'CKMembershipLevel',
-    'CKPublicTxn',
-    'CKBlockInfo',
-    'CKTxnOutput',
-    'CKReqTransfer',
-    'CKBillPay',
-    'CKEmailMessage',
-    'CKTerminal',
-    'CKTerminalLog',
-    'CKVoucher',
-    'CKNotification',
-    'CKInvoiceState',
-    'CKForwarding',
-    'CKRevenuePayout',
-    'CKRevShareLink',
-    'CKRevShareHit',
-    'CKPhoneNumber',
-    'CKSMSMessage',
-    'CKApiKey'
+    'CKUser', 'CKEvent', 'CKUserRequest', 'CKCard', 'CKActivityLog', 'CKMagicCoin',
+    'CKEmailAddress', 'CKInvoice', 'CKReqSend', 'CKAccount', 'CKReqReceive',
+    'CKMembershipLevel', 'CKPublicTxn', 'CKBlockInfo', 'CKTxnOutput', 'CKReqTransfer',
+    'CKBillPay', 'CKEmailMessage', 'CKTerminal', 'CKTerminalLog', 'CKVoucher', 'CKNotification',
+    'CKInvoiceState', 'CKForwarding', 'CKRevenuePayout', 'CKRevShareLink', 'CKRevShareHit',
+    'CKPhoneNumber', 'CKSMSMessage', 'CKApiKey'
 ]
 
-__all__ = CK_DB_OBJECTS + ['CKDBObject']
+__all__ = CK_DB_OBJECTS + ['CKObject', 'CKDBObject']
 
 class CKObject(dict):
     '''
@@ -70,7 +46,7 @@ class CKDBObject(CKObject):
     def ref_number(self):
         return self.CK_refnum
 
-    def __str__(self):
+    def for_json(self):
         # useful when used as a argument to another API call.
         return self.ref_number
 
