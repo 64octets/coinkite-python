@@ -19,7 +19,7 @@ except ImportError:
 
 # Use only these two for encoding and decoding JSON.
 #
-json_encoder = simplejson.JSONEncoder(use_decimal = True)
-json_decoder = simplejson.JSONDecoder(object_hook = make_db_object, parse_float = Decimal)
+json_encoder = simplejson.JSONEncoder(use_decimal=True, for_json=True)
+json_decoder = simplejson.JSONDecoder(object_hook=make_db_object, parse_float=Decimal)
 
 # EOF
