@@ -4,7 +4,6 @@
 # Full docs at: https://docs.coinkite.com/
 # 
 # Copyright (C) 2014 Coinkite Inc. (https://coinkite.com) ... See LICENSE.md
-# 
 #
 import os, sys, datetime, time, logging, itertools, functools
 from decimal import Decimal
@@ -19,8 +18,11 @@ from exc import CKArgumentError, CKServerSideError, CKMissingError
 logger = logging.getLogger('ckapi')
 
 class CKRequestor(object):
+    "Use this object to get and put resources to api.coinkite.com"
 
-    def __init__(self, api_key = None, api_secret = None, host = 'https://api.coinkite.com', client=None):
+    def __init__(self, api_key=None, api_secret=None, host='https://api.coinkite.com', client=None):
+        "Provide API Key and secret, or use values from Environment"
+
         self.api_key = api_key or os.environ.get('CK_API_KEY', None)
         self.api_secret = api_secret or os.environ.get('CK_API_SECRET', None)
         self.host = host
@@ -28,7 +30,16 @@ class CKRequestor(object):
         self.client = client or new_default_http_client(verify_ssl_certs=True)
 
     def request(self, method, endpt, **kws):
-        "Low level method to perform API request: provide HTTP method and endpoint"
+        '''
+        Low level method to perform API request: provide HTTP method and endpoint
+
+        Optional args:
+            _data = JSON document to be PUT (instead of **kws as dict)
+            _headers = Extra headers to put on request (not useful?)
+
+        NOTE: Any other arguments will end up as arguments to the API call itself.
+
+        '''
         assert method in ('GET', 'PUT'), method
 
         # Compose the abs URL required
@@ -185,10 +196,12 @@ class CKRequestor(object):
 
     def get_balance(self, account):
         "Get account details, including balance, by account name, number or refnum"
-        return self.get('/v1/account/%s' % account).account
+        return self.get('/v1/account/%s' % getattr(account, 'ref_number', account)).account
 
     def get_list(self, what, account=None, just_count=False, **kws):
-        '''Get a list of objects, using /v1/list/WHAT endpoints, where WHAT is:
+        '''
+        Get a list of objects, using /v1/list/WHAT endpoints, where WHAT is:
+
                 activity
                 credits
                 debits
@@ -200,12 +213,12 @@ class CKRequestor(object):
                 transfers
                 unauth_sends
 
-            This is a generator, so keep that in mind.
+        This is a generator function, so keep that in mind.
         '''
         ep = '/v1/list/%s' % what
 
         if account != None:
-            kws['account'] = str(account)
+            kws['account'] = account
 
         if just_count:
             # return total number of records
@@ -218,8 +231,9 @@ class CKRequestor(object):
         return self.put('/v1/pubnub/send', **msg).enabled_keys
 
     def pubnub_start(self):
-        '''Create a Pubnub object and return it, ready to be used, and the name
-           of the channel to subscribe to.
+        '''
+        Create a Pubnub object and return it, ready to be used, and the name
+        of the channel you need to subscribe to.
         '''
         v = self.put('/v1/pubnub/enable')
 
