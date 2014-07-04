@@ -43,16 +43,18 @@ class CKPrintList(list):
         self.story(text="This is some long text about stuff", boxed=True)
         self.ck_footer()
 
-    def _new_instruction(self, cmd, **args):
-        args['cmd'] = cmd
-        self.append(args)
 
     def __getattr__(self, name):
-        return functools.partial(self._new_instruction, name)
+        def _new_instruction(cmd, **args):
+            args['cmd'] = cmd
+            self.append(args)
+        return functools.partial(_new_instruction, name)
         
 
 def test_paper():
-    # Call this with "py.test paper.py -s"
+    #
+    # Call this with "py.test paper.py -s", or "python paper.py"
+    #
     l = CKPrintList()
     l._example_usage()
     assert len(l) == 4
@@ -63,6 +65,7 @@ def test_paper():
     k = [{'cmd': 'huge', 'msg': 'Hello World!'},
          {'cmd': 'qrcode', 'data': 'https://google.com?q=cats'},
          {'cmd': 'tiny', 'msg': 'This is a little message'}]
+
     k2 = CKPrintList()
     k2.huge(msg = 'Hello World!')
     k2.qrcode(data = 'https://google.com?q=cats')
@@ -70,5 +73,7 @@ def test_paper():
 
     assert k2 == k
     
+if __name__ == '__main__':
+    test_paper()
 
 # EOF
