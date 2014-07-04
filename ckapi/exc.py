@@ -1,5 +1,9 @@
 #
-# All Exceptions
+# All Exceptions for Coinkite API
+#
+# Full docs at: https://docs.coinkite.com/
+# 
+# Copyright (C) 2014 Coinkite Inc. (https://coinkite.com) ... See LICENSE.md
 #
 
 class CKAPIConnectionError(RuntimeError):
