@@ -13,7 +13,8 @@ account today!
 - [Requests module](http://docs.python-requests.org/en/latest/) is strongly
   recommended, but not required.
 
-- [py.test](http://pytest.org/) is needed, but if you want to run the test code in `test_code.py`
+- [py.test](http://pytest.org/) is needed, but only if you want to
+  run the test code in `test_code.py`
 
 - [PubNub python library](https://github.com/pubnub/python) is needed,
   if you want to monitor real-time events.
@@ -39,7 +40,7 @@ decode `decimal.Decimal` numbers.
 
 Also included in the library:
 
-- test code, which can be a source of examples.
+- Testing code which can be a source of examples (see `test_code.py`).
 
 - `paper.py` which simplifies the rendering of receipts for terminals.
 
