@@ -6,14 +6,23 @@ account today!
 
 ## Requirements
 
-- [Requests module](http://docs.python-requests.org/en/latest/) is strongly recommended, but not required.
+- [SimpleJSON](http://simplejson.readthedocs.org/en/latest/) is
+  required. It's needed because we have to control how decimals are
+  encoded and decoded into JSON. The stock JSON library isn't quite there.
 
-- [py.test](http://pytest.org/) is needed, if you want to run the test code in `test_code.py`
+- [Requests module](http://docs.python-requests.org/en/latest/) is strongly
+  recommended, but not required.
+
+- [py.test](http://pytest.org/) is needed, but if you want to run the test code in `test_code.py`
 
 - [PubNub python library](https://github.com/pubnub/python) is needed,
   if you want to monitor real-time events.
 
 - This code should work directly on Google App Engine without changes.
+
+See the `requirements.txt` file, which should be ready to use with
+`pip install -r requirements.txt` although it includes the full
+compliment of dependances.
 
 ## Standalone vs. `ckapi` Library
 
@@ -23,10 +32,10 @@ requests. Feel free to pull the authentication code from there or the library.
 
 `ckapi` is a module you can incorporate into your server-side code.
 It handles authentication and HTTPS traffic (including the all-important
-certificate verification), plus provides wrappers for some of the most
-useful API resources. It does some magic in the JSON decoding to
-provide more realistic objects to your programs, decode Decimal numbers
-correctly, handle errors, and rate-limiting retry/fallback.
+certificate verification), plus provides wrappers for some of the
+most useful API resources. It does magic in the JSON decoding to
+provide more realistic objects to your programs, and correctly
+decode `decimal.Decimal` numbers.
 
 Also included in the library:
 
@@ -37,11 +46,11 @@ Also included in the library:
 ## Getting Started
 
 ````python
-	>>> from ckapi import CKRequestor
-	>>> r = CKRequestor('Kxxxx-xxxx-xxx', 'Sxxxx-xxxx-xxx')
-	>>> r.get('/v1/my/self')
-	<CKObject: supported_cct=<CKObject: USD='US Dollar' AUD='Australian Dollar' CHF='Swiss Franc' KRW='Won' CNY='Yuan Renminbi' LTC='Litecoin' BLK='Blackcoin' NZD='New Zealand Dollar' XTN='Bitcoin Testnet' EUR='Euro' RUB='Russian Ruble' JPY='Yen' BRL='Brazilian Real' BTC='Bitcoin' PLN='Zloty' CAD='Canadian Dollar' SEK='Swedish Krona' GBP='Pound Sterling'> member_since='2014-06-12' membership='Personal Plan (pre-paid annually)' api_key=<CKApiKey: funds_limit=<CKObject: currency='XTN' string='100' pretty=u'\u2740 100.0 XTN' integer_scale=8 integer=10000000000 decimal=100> CK_refnum='09B724B100-9A3B47' max_request_rate=0 memo='All access' source_ip=None CK_type='CKApiKey' api_key='Kxxx-xxx-xxx' permissions=['term', 'read', 'send2', 'send', 'xfer', 'recv', 'events']> username='xxx'>
-	>>> r.put('/v1/new/voucher', account=0, amount=3)
+>>> from ckapi import CKRequestor
+>>> r = CKRequestor('Kxxxx-xxxx-xxx', 'Sxxxx-xxxx-xxx')
+>>> r.get('/v1/my/self')
+<CKObject: supported_cct=<CKObject: USD='US Dollar' AUD='Australian Dollar' CHF='Swiss Franc' KRW='Won' CNY='Yuan Renminbi' LTC='Litecoin' BLK='Blackcoin' NZD='New Zealand Dollar' XTN='Bitcoin Testnet' EUR='Euro' RUB='Russian Ruble' JPY='Yen' BRL='Brazilian Real' BTC='Bitcoin' PLN='Zloty' CAD='Canadian Dollar' SEK='Swedish Krona' GBP='Pound Sterling'> member_since='2014-06-12' membership='Personal Plan (pre-paid annually)' api_key=<CKApiKey: funds_limit=<CKObject: currency='XTN' string='100' pretty=u'\u2740 100.0 XTN' integer_scale=8 integer=10000000000 decimal=100> CK_refnum='09B724B100-9A3B47' max_request_rate=0 memo='All access' source_ip=None CK_type='CKApiKey' api_key='Kxxx-xxx-xxx' permissions=['term', 'read', 'send2', 'send', 'xfer', 'recv', 'events']> username='xxx'>
+>>> r.put('/v1/new/voucher', account=0, amount=3)
 ````
 
 

@@ -1,0 +1,9 @@
+# Absolutely required:
+simplejson>=3.2.0
+
+# Optional, but recommended:
+requests>=2.3.0
+pubnub>=3.5.2
+pytest>=2.5.2
+
+
