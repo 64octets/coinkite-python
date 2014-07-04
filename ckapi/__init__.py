@@ -24,9 +24,10 @@
 # THE SOFTWARE.
 #
 
-__version__ = '0.1'
+__version__ = '0.1.0'
 
 from requestor import CKRequestor
+from paper import CKPrintList
 
 from objs import *
 from exc import *

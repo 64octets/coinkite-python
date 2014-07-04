@@ -6,10 +6,10 @@
 # Copyright (C) 2014 Coinkite Inc. (https://coinkite.com) ... See LICENSE.md
 # 
 #
-import os, sys, datetime, logging, itertools
+import os, sys, datetime, time, logging, itertools, functools
 from decimal import Decimal
 from http_client import new_default_http_client
-from json import json_decoder, json_encoder
+from utils import json_decoder, json_encoder
 from hmac import HMAC
 from hashlib import sha256
 from urlparse import urljoin, urlparse
@@ -31,6 +31,7 @@ class CKRequestor(object):
         "Low level method to perform API request: provide HTTP method and endpoint"
         assert method in ('GET', 'PUT'), method
 
+        # Compose the abs URL required
         url = urljoin(self.host, endpt)
         endpt = urlparse(url).path
 
@@ -40,10 +41,6 @@ class CKRequestor(object):
             # User may supply some headers? Probably not useful
             hdrs.update(kws.pop('_headers'))
 
-        if not endpt.startswith('/public'):
-            # Almost always add AUTH headers
-            hdrs.update(self._auth_headers(endpt))
-
         data = None
         if kws:
             assert '?' not in url, "Please don't mix keyword args and query string in URL"
@@ -52,15 +49,30 @@ class CKRequestor(object):
                 # encode as query args.
                 url += '?' + urlencode(kws)
             else:
-                # submit a JSON document
-                data = json_encoder.encode(kws)
+                # submit a JSON document, based on either the keyword args (made into a dict)
+                # or whatever object is in "_data" argument
+                data = json_encoder.encode(kws.get('_data', kws))
                 hdrs['Content-Type'] = 'application/json'
 
-        print url
-        body, status = self.client.request(method, url, hdrs, data)
+        logger.info('%s %s' % (method, url))
+
+        # we will retry rate-limited responses, so be prepared to retry here.
+        while 1:
+            if not endpt.startswith('/public'):
+                # Almost always add AUTH headers
+                hdrs.update(self._auth_headers(endpt))
+
+            body, status = self.client.request(method, url, hdrs, data)
         
-        # decode JSON
-        body = json_decoder.decode(body)
+            # decode JSON
+            body = json_decoder.decode(body)
+
+            if status == 429 and 'wait_time' in body:
+                # delay and retry
+                logging.info("Rate limited: waiting %s seconds" % body.wait_time)
+                time.sleep(body.wait_time)
+            else:
+                break
 
         if status == 400:
             raise CKArgumentError(body)
@@ -160,22 +172,22 @@ class CKRequestor(object):
     #
 
     def check_myself(self):
-        # ... before you wreck yourself.
+        # ... before you wreck myself?
         return r.get('/v1/my/self')
 
     def get_detail(self, refnum):
         "Get detailed-view of any CK object by reference number"
         return self.get('/v1/detail/' + refnum).detail
 
-    def get_accounts(self, balances=False):
+    def get_accounts(self):
         "Get a list of accounts, doesn't include balances"
         return self.get('/v1/my/accounts').results
 
     def get_balance(self, account):
         "Get account details, including balance, by account name, number or refnum"
-        return self.get('/v1/account/' + str(account)).account
+        return self.get('/v1/account/%s' % account).account
 
-    def get_list(self, what, account=None, **kws):
+    def get_list(self, what, account=None, just_count=False, **kws):
         '''Get a list of objects, using /v1/list/WHAT endpoints, where WHAT is:
                 activity
                 credits
@@ -195,26 +207,39 @@ class CKRequestor(object):
         if account != None:
             kws['account'] = str(account)
 
+        if just_count:
+            # return total number of records
+            return self.get(ep, limit=0, **kws).paging.total_count
+
         return self.get_iter(ep, **kws)
 
-    def get_count(self, what, **kws):
-        "Similar to get_list(), but this returns just the count of the # of objects"
-        return self.get('/v1/list/' + what, limit=0, **kws).paging.total_count
+    def pubnub_send(self, msg):
+        "Send a test message via Coinkite > Pubnub > back to you"
+        return self.put('/v1/pubnub/send', **msg).enabled_keys
 
+    def pubnub_start(self):
+        '''Create a Pubnub object and return it, ready to be used, and the name
+           of the channel to subscribe to.
+        '''
+        v = self.put('/v1/pubnub/enable')
 
-if 1:
-    r = CKRequestor()
-    #print r.get('/public/endpoints')
-    #print r.get('/v1/my/self')
-    #print r.get_detail('512069325D-AB194F')
-    #print r.get_detail('512069325D-AB1942')
-    #print r.put('/v1/list/activity', limit=1)
-    #print r.get_count('activity', account=1)
-    #print r.get_accounts()
-    #print r.get_balance(0)
-    #print r.get_list('requests', limit=1, account=0)
-    #print list(r.get_list('requests', account=0))
-    #print list(r.get_list('requests', account=0, limit=5))
-    print [str(i) for i in r.get_list('requests', account=0, limit=7)]
+        try:
+            from Pubnub import Pubnub
+        except ImportError:
+            raise RuntimeError("You need Pubnub's python module installed (>= 3.5.2), "
+                               "see: https://github.com/pubnub/python")
+
+        pn = Pubnub(None, v.subscribe_key, auth_key=v.auth_key, ssl_on=True)
+
+        return pn, v.channel
+
+    def terminal_print(self, receipt_doc, preview_only=False, terminal='any'):
+        "Send a document to be printed"
+        ep = '/v1/terminal/%s/print' % ('preview' if preview_only else terminal)
+        return self.put(ep, _data = receipt_doc)
+
+    def terminal_print_help(self):
+        "return a helpful list of instructions (commands) for receipt printing"
+        return self.get('/v1/terminal/preview/print').command_spec
 
 # EOF

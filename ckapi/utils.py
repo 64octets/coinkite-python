@@ -22,3 +22,4 @@ except ImportError:
 json_encoder = simplejson.JSONEncoder(use_decimal = True)
 json_decoder = simplejson.JSONDecoder(object_hook = make_db_object, parse_float = Decimal)
 
+# EOF
