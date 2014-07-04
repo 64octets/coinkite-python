@@ -7,27 +7,43 @@ account today!
 ## Requirements
 
 - [Requests module](http://docs.python-requests.org/en/latest/) is strongly recommended, but not required.
-- This code should work directly on Google App Engine without changes
 
-## Setup
+- [py.test](http://pytest.org/) is needed, if you want to run the test code in `test_code.py`
 
-	pip install -r requirements.txt
+- [PubNub python library](https://github.com/pubnub/python) is needed,
+  if you want to monitor real-time events.
 
+- This code should work directly on Google App Engine without changes.
 
-### Requirements
+## Standalone vs. `ckapi` Library
 
-For this demo, we are using:
+`standalone/ck-helper.py` is a simple cURL helper program that calculates the
+authentication headers you will need. It provides a great way to quickly test
+requests. Feel free to pull the authentication code from there or the library.
 
-- AngularJS <https://docs.angularjs.org>
-- Bootstrap <http://getbootstrap.com/>
-- AngularStrap <http://mgcrea.github.io/angular-strap>
-- Restangular <https://github.com/mgonto/restangular>
-- lodash (required by Restangular) <http://lodash.com/>
-- font-awesome <http://fontawesome.io/>
-- crypto-js (just HMAC-SHA256) <https://code.google.com/p/crypto-js/>
+`ckapi` is a module you can incorporate into your server-side code.
+It handles authentication and HTTPS traffic (including the all-important
+certificate verification), plus provides wrappers for some of the most
+useful API resources. It does some magic in the JSON decoding to
+provide more realistic objects to your programs, decode Decimal numbers
+correctly, handle errors, and rate-limiting retry/fallback.
 
-All these files, except `json-print`, are being provided by CDN sources
-to make this package lighter.
+Also included in the library:
+
+- test code, which can be a source of examples.
+
+- `paper.py` which simplifies the rendering of receipts for terminals.
+
+## Getting Started
+
+````python
+	>>> from ckapi import CKRequestor
+	>>> r = CKRequestor('Kxxxx-xxxx-xxx', 'Sxxxx-xxxx-xxx')
+	>>> r.get('/v1/my/self')
+	<CKObject: supported_cct=<CKObject: USD='US Dollar' AUD='Australian Dollar' CHF='Swiss Franc' KRW='Won' CNY='Yuan Renminbi' LTC='Litecoin' BLK='Blackcoin' NZD='New Zealand Dollar' XTN='Bitcoin Testnet' EUR='Euro' RUB='Russian Ruble' JPY='Yen' BRL='Brazilian Real' BTC='Bitcoin' PLN='Zloty' CAD='Canadian Dollar' SEK='Swedish Krona' GBP='Pound Sterling'> member_since='2014-06-12' membership='Personal Plan (pre-paid annually)' api_key=<CKApiKey: funds_limit=<CKObject: currency='XTN' string='100' pretty=u'\u2740 100.0 XTN' integer_scale=8 integer=10000000000 decimal=100> CK_refnum='09B724B100-9A3B47' max_request_rate=0 memo='All access' source_ip=None CK_type='CKApiKey' api_key='Kxxx-xxx-xxx' permissions=['term', 'read', 'send2', 'send', 'xfer', 'recv', 'events']> username='xxx'>
+	>>> r.put('/v1/new/voucher', account=0, amount=3)
+````
+
 
 
 ## More about Coinkite
