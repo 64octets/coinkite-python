@@ -1,6 +1,10 @@
 #
 # Wrappers for Coinkite objects which you might see.
 #
+# Full docs at: https://docs.coinkite.com/
+# 
+# Copyright (C) 2014 Coinkite Inc. (https://coinkite.com) ... See LICENSE.md
+#
 
 CK_DB_OBJECTS = [
     'CKUser', 'CKEvent', 'CKUserRequest', 'CKCard', 'CKActivityLog', 'CKMagicCoin',
