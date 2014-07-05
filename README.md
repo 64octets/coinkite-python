@@ -7,8 +7,9 @@ account today!
 ## Requirements
 
 - [SimpleJSON](http://simplejson.readthedocs.org/en/latest/) is
-  required. It's needed because we have to control how decimals are
-  encoded and decoded into JSON. The stock JSON library isn't quite there.
+  strongly recommended. It's best because we have to control how decimals are
+  encoded and decoded into JSON. We do have some workaround code in place to use
+  stock json module, and for python2.7 it's sufficient.
 
 - [Requests module](http://docs.python-requests.org/en/latest/) is strongly
   recommended, but not required.

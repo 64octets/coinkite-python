@@ -1,7 +1,8 @@
 # Absolutely required:
-simplejson>=3.2.0
+# <NONE>
 
 # Optional, but recommended:
+simplejson>=3.2.0
 requests>=2.3.0
 pubnub>=3.5.2
 pytest>=2.5.2
