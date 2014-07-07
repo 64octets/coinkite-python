@@ -6,6 +6,8 @@ account today!
 
 ## Requirements
 
+- [datautils](http://labix.org/python-dateutil) is required to parse ISO 8601 format dates.
+
 - [SimpleJSON](http://simplejson.readthedocs.org/en/latest/) is
   *very strongly* recommended. It's best because we have to control how decimals are
   encoded and decoded into JSON. We do have some workaround code in place to use the

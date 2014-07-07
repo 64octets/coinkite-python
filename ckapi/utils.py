@@ -35,8 +35,8 @@ except ImportError:
                 return o.for_json()
 
             if isinstance(o, Decimal):
-                # NOTE: there is no way to do this better. I've tried. Get SimpleJSON
-                # This hack may work for values >= one satoshi so good enough?
+                # NOTE: there is no way to do this better. I've tried. Get SimpleJSON!!
+                # This hack will not work for all values!
                 f = float(o)
                 assert str(f) == str(o)[0:len(str(f))] or int(f) == int(o), (f, o)
                 return f

@@ -232,14 +232,21 @@ class CKRequestor(object):
 
     def pubnub_send(self, msg):
         "Send a test message via Coinkite > Pubnub > back to you"
-        return self.put('/v1/pubnub/send', **msg).enabled_keys
+        return self.put('/v1/pubnub/send', **msg)
 
+    def pubnub_enable(self):
+        '''
+        Create a Pubnub object and return it, ready to be used, and the name
+        of the channel you need to subscribe to.
+        '''
+        return self.put('/v1/pubnub/enable')
+        
     def pubnub_start(self):
         '''
         Create a Pubnub object and return it, ready to be used, and the name
         of the channel you need to subscribe to.
         '''
-        v = self.put('/v1/pubnub/enable')
+        v = self.pubnub_enable()
 
         try:
             from Pubnub import Pubnub

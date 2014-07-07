@@ -5,6 +5,8 @@
 # 
 # Copyright (C) 2014 Coinkite Inc. (https://coinkite.com) ... See LICENSE.md
 #
+import re
+from dateutil.parser import parse as iso_parse
 
 CK_DB_OBJECTS = [
     'CKUser', 'CKEvent', 'CKUserRequest', 'CKCard', 'CKActivityLog', 'CKMagicCoin',
@@ -60,11 +62,27 @@ class CKDBObject(CKObject):
             ret += ' %s=%r' % (k, v)
         return ret + '>'
 
+# This pattern should match the dates and times from Coinkite server
+# for the next 80 years or so.
+DATETIME_RE = re.compile(r'^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d.\d+(Z|)$')
 
 def make_db_object(d):
-    # given a dict straight from the JSON, return a more functional object
+    # Given a dict straight from the JSON, return a more functional object
     # which maybe a proxy or wrapper version object.
+    #
     cls = d.get('CK_type', None)
+
+    # Look for ISO datetimes. This is a little risky, but I know about the
+    # server we're talking with, so...
+    #
+    # example:      2014-07-07T18:48:34.880819
+    #
+    for k, v in d.items():
+        if isinstance(v, basestring) and DATETIME_RE.match(v):
+            try:
+                d[k] = iso_parse(v)
+            except:
+                pass
 
     if not cls or cls not in CK_DB_OBJECTS:
         return CKObject(d)

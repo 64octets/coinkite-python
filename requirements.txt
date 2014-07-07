@@ -1,8 +1,9 @@
 # Absolutely required:
-# <NONE>
+simplejson>=3.2.0
+python-dateutil==1.5
+
 
 # Optional, but recommended:
-simplejson>=3.2.0
 requests>=2.3.0
 pubnub>=3.5.2
 pytest>=2.5.2
