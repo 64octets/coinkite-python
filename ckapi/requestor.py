@@ -62,10 +62,14 @@ class CKRequestor(object):
             else:
                 # submit a JSON document, based on either the keyword args (made into a dict)
                 # or whatever object is in "_data" argument
+                logger.info("aa= %r" % kws.get('_data', kws))
                 data = json_encoder.encode(kws.get('_data', kws))
                 hdrs['Content-Type'] = 'application/json'
 
+        # Show traffic.
         logger.info('%s %s' % (method, url))
+        if method == 'PUT':
+            logger.info(".. body: %r" % data)
 
         # we will retry rate-limited responses, so be prepared to retry here.
         while 1:

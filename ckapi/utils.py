@@ -22,30 +22,46 @@ except ImportError:
     import json
     json_decoder = json.JSONDecoder(object_hook=make_db_object, parse_float=Decimal)
 
-    # Taken from http://stackoverflow.com/questions/1960516
+    # Lessons learned from http://stackoverflow.com/questions/1960516
+    # - the provided API is not suffient to do Decimal in place of float
+    # - monkey patching is too version sensitive
+    # - the code in json.encoding is too heavy-duty to patch
+    # - it can't be done, just use SimpleJSON
+    #
     class DecimalEncoder(json.JSONEncoder):
-        # NOTE: only required for python < 2.7 ??
-        def _iterencode(self, o, markers=None):
-            if isinstance(o, Decimal):
-                return (str(o) for o in [o])
-            return super(DecimalEncoder, self)._iterencode(o, markers)
 
         def default(self, o):
             if hasattr(o, 'for_json'):
                 return o.for_json()
+
+            if isinstance(o, Decimal):
+                # NOTE: there is no way to do this better. I've tried. Get SimpleJSON
+                # This hack may work for values >= one satoshi so good enough?
+                f = float(o)
+                assert str(f) == str(o)[0:len(str(f))]
+                return f
+
             return json.JSONEncoder.default(self, o)
 
     json_encoder = DecimalEncoder()
 
 
 def test_json_encoding():
-    # Verify code above is working.
+    # Verify code above is working. Will fail on our hack since it can't
+    # represent all these digits.
 
     a = Decimal('0.3333333333333333333333333333')
+    
+    enc = json_encoder.encode(a)
+    assert enc == '0.3333333333333333333333333333', enc
 
-    aa = json_decoder.decode(json_encoder.encode(a))
+    aa = json_decoder.decode(enc)
+    assert a == aa, aa
 
-    assert a == aa
+    enc = json_encoder.encode(dict(test=a))
+    dd = json_decoder.decode(enc)
+    assert dd == dict(test=a)
+
 
 
 # EOF
