@@ -38,7 +38,7 @@ except ImportError:
                 # NOTE: there is no way to do this better. I've tried. Get SimpleJSON
                 # This hack may work for values >= one satoshi so good enough?
                 f = float(o)
-                assert str(f) == str(o)[0:len(str(f))]
+                assert str(f) == str(o)[0:len(str(f))] or int(f) == int(o), (f, o)
                 return f
 
             return json.JSONEncoder.default(self, o)
