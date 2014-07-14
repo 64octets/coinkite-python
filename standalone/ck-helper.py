@@ -4,14 +4,17 @@
 #
 # Full API documentation available at: https://docs.coinkite.com
 #
-# This program print out the signed headers that you need for authorization, 
-# in a form that can be used directly as the command-line arguments to Curl.
+# This program prints out the signed headers that you need for authorization, 
+# in a format that can be used directly as the command-line arguments to Curl.
 #
 # EXAMPLE (bash):
 #
 #       % export CK_API_KEY=Kabababa-ababababab-abababab
 #       % export CK_API_SECRET=S01010101-010101010101-1010101001
 #       % curl `./ck-helper.py /v1/my/self`
+#
+# Create a voucher:
+#       % curl `./ck-helper.py /v1/new/voucher` -X PUT -d amount=0.001 -d account=0
 #
 #
 import os, sys, datetime
