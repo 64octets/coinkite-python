@@ -6,9 +6,12 @@ account today!
 
 ## Requirements
 
+- [datautils](http://labix.org/python-dateutil) is required to parse ISO 8601 format dates.
+
 - [SimpleJSON](http://simplejson.readthedocs.org/en/latest/) is
-  required. It's needed because we have to control how decimals are
-  encoded and decoded into JSON. The stock JSON library isn't quite there.
+  *very strongly* recommended. It's best because we have to control how decimals are
+  encoded and decoded into JSON. We do have some workaround code in place to use the
+  stock `json` module, but it's a ugly hack that can only work some of the time.
 
 - [Requests module](http://docs.python-requests.org/en/latest/) is strongly
   recommended, but not required.
@@ -21,9 +24,9 @@ account today!
 
 - This code should work directly on Google App Engine without changes.
 
-See the `requirements.txt` file, which should be ready to use with
-`pip install -r requirements.txt` although it includes the full
-compliment of dependances.
+See version numbers in the `requirements.txt` file, which should
+be ready to use with `pip install -r requirements.txt`. It includes
+the full compliment of dependances.
 
 ## Standalone vs. `ckapi` Library
 

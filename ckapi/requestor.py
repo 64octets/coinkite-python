@@ -62,10 +62,14 @@ class CKRequestor(object):
             else:
                 # submit a JSON document, based on either the keyword args (made into a dict)
                 # or whatever object is in "_data" argument
+                logger.info("aa= %r" % kws.get('_data', kws))
                 data = json_encoder.encode(kws.get('_data', kws))
                 hdrs['Content-Type'] = 'application/json'
 
+        # Show traffic.
         logger.info('%s %s' % (method, url))
+        if method == 'PUT':
+            logger.info(".. body: %r" % data)
 
         # we will retry rate-limited responses, so be prepared to retry here.
         while 1:
@@ -228,14 +232,21 @@ class CKRequestor(object):
 
     def pubnub_send(self, msg):
         "Send a test message via Coinkite > Pubnub > back to you"
-        return self.put('/v1/pubnub/send', **msg).enabled_keys
+        return self.put('/v1/pubnub/send', **msg)
 
+    def pubnub_enable(self):
+        '''
+        Create a Pubnub object and return it, ready to be used, and the name
+        of the channel you need to subscribe to.
+        '''
+        return self.put('/v1/pubnub/enable')
+        
     def pubnub_start(self):
         '''
         Create a Pubnub object and return it, ready to be used, and the name
         of the channel you need to subscribe to.
         '''
-        v = self.put('/v1/pubnub/enable')
+        v = self.pubnub_enable()
 
         try:
             from Pubnub import Pubnub
