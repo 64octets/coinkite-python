@@ -20,12 +20,12 @@ logger = logging.getLogger('ckapi')
 class CKRequestor(object):
     "Use this object to get and put resources to api.coinkite.com"
 
-    def __init__(self, api_key=None, api_secret=None, host='https://api.coinkite.com', client=None):
+    def __init__(self, api_key=None, api_secret=None, host=None, client=None):
         "Provide API Key and secret, or use values from Environment"
 
         self.api_key = api_key or os.environ.get('CK_API_KEY', None)
         self.api_secret = api_secret or os.environ.get('CK_API_SECRET', None)
-        self.host = host
+        self.host = host or 'https://api.coinkite.com'
 
         self.client = client or new_default_http_client(verify_ssl_certs=True)
 
@@ -214,8 +214,10 @@ class CKRequestor(object):
                 receives
                 requests
                 sends
+                sweeps
                 transfers
                 unauth_sends
+                watching
 
         This is a generator function, so keep that in mind.
         '''
@@ -266,5 +268,47 @@ class CKRequestor(object):
     def terminal_print_help(self):
         "return a helpful list of instructions (commands) for receipt printing"
         return self.get('/v1/terminal/preview/print').command_spec
+
+    def cosign_request(self, request_rn, cosigner_rn, xprvkey_or_wallet=None, passphrase=None):
+        '''
+            Co-sign (authorize) a multsig transaction proposed by a Coinkite user
+            on a shared account.
+
+            Requires reference numbers for a "spend" request (withdraw, transfer, billpay, voucher),
+            and the co-signer which will be doing the signing. Provide the BIP32 wallet to
+            sign unless Coinkite stores the private key (in HSM or encrypted form), in which
+            case a passphrase will typically be needed.
+        '''
+
+        # fetch the required signing data
+        url = '/v1/co-sign/%s/%s' % (request_rn, cosigner_rn)
+        info = self.get(url).signing_info
+
+        # NOTE: could do more error checking here (like, is it already signed by this co-signer)
+        assert info.inputs, "Already signed?"
+
+        args = {}
+
+        if xprvkey_or_wallet:
+            # perform the signing using the private key provided.
+            try:
+                from multisig import cosign_spend_request
+            except ImportError:
+                raise
+                raise RuntimeError("You need to install 'pycoin' to do local signing.")
+
+            args['signatures'] = cosign_spend_request(xprvkey_or_wallet,
+                                    info.req_keys, info.inputs, info.xpubkey_check)
+        elif passphrase:
+            # If Coinkite has an encrypted copy of the private key, either in a file
+            # or inside the HSM, we need to only give the passphrase
+            args['passphrase'] = passphrase
+
+        # NOTE: if neither private key nor passphrase is provided, HSM signing might still
+        # work if it wasn't encrypted.
+
+        # upload new signature or signing authority.
+        return self.put(url + '/sign', **args)
+        
 
 # EOF

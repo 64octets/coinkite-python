@@ -8,4 +8,11 @@ requests>=2.3.0
 pubnub>=3.5.2
 pytest>=2.5.2
 
+# Optional, only required for multisig signing (co-signing)
+pycoin>=0.52
+# Another fork, but msg signing not required for this codebase...
+#-e git://github.com/peter-conalgo/pycoin.git@msg_signing_2#egg=pycoin
+
+# Optional, only required for code in ./scripts
+click>=3.2
 

@@ -39,13 +39,15 @@ It handles authentication and HTTPS traffic (including the all-important
 certificate verification), plus provides wrappers for some of the
 most useful API resources. It does magic in the JSON decoding to
 provide more realistic objects to your programs, and correctly
-decode `decimal.Decimal` numbers.
+decodes `decimal.Decimal` numbers.
 
 Also included in the library:
 
 - Testing code which can be a source of examples (see `test_code.py`).
 
 - `paper.py` which simplifies the rendering of receipts for terminals.
+
+- `multisig.py` providing code for signing (authorizing) multisig transactions.
 
 ## Getting Started
 
