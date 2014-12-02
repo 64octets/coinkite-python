@@ -2,7 +2,7 @@
 #
 # Sign (approve) a multisig transaction, using the Coinkite API and maybe an offline key.
 #
-# NOTE: If you want to sign without using an API key, and you have the private key needed,
+# NOTE: If you want to sign without using an API key, and you have the private keys needed,
 # consider using the example code at <https://github.com/coinkite/offline-multisig-python>
 # instead of this program.
 #
@@ -17,11 +17,6 @@ except ImportError:
     # be nice and work even if CK api not yet installed, and we are run from git checkout
     sys.path.append(os.path.realpath(__file__ + '/../..'))
     import ckapi
-
-'''
-                    help="Proposed transaction to be signed")
-                    help="Refnum of co-signer key (or omit, and we'll pick first needed)")
-'''
 
 @click.command()
 @click.argument('request')
@@ -91,3 +86,4 @@ amount: {amount.pretty}
 if __name__ == '__main__':
     approve()
 
+# EOF
