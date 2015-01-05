@@ -4,7 +4,7 @@
 and visit the [Coinkite Main Site](https://coinkite.com/) to open your
 account today!
 
-Easy install via pip from the Cheeseshop: [coinkite-api package](https://pypi.python.org/pypi/coinkite-api)
+Easy install via pip from the Cheese Shop: [coinkite-api package](https://pypi.python.org/pypi/coinkite-api)
 
 ## Requirements
 
