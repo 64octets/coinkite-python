@@ -1,3 +1,7 @@
+Jan 5, 2015
+-----------
+- Metadata and `setup.py` added to support Pypi
+- Set version to 1.0.0
 
 Jul 7, 2014
 -----------

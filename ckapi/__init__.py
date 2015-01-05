@@ -24,7 +24,7 @@
 # THE SOFTWARE.
 #
 
-__version__ = '0.1.0'
+__version__ = '1.0.0'
 
 from requestor import CKRequestor
 from paper import CKPrintList
