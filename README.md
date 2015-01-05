@@ -4,6 +4,8 @@
 and visit the [Coinkite Main Site](https://coinkite.com/) to open your
 account today!
 
+Easy install via pip from the Cheeseshop: [coinkite-api package](https://pypi.python.org/pypi/coinkite-api)
+
 ## Requirements
 
 - [datautils](http://labix.org/python-dateutil) is required to parse ISO 8601 format dates.
