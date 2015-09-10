@@ -70,11 +70,10 @@ else:
             sys.stderr.write(
                 'Warning: http_client.py requires that your Python '
                 '"requests" library be newer than version 0.8.8, but your '
-                '"requests" library is version %s. Stripe will fall back to '
+                '"requests" library is version %s. We will fall back to '
                 'an alternate HTTP library so everything should work. We '
-                'recommend upgrading your "requests" library. If you have any '
-                'questions, please contact support@stripe.com. (HINT: running '
-                '"pip install -U requests" should upgrade your requests '
+                'recommend upgrading your "requests" library. '
+                '(HINT: running "pip install -U requests" should upgrade your requests '
                 'library to the latest version.)' % (version,))
             requests = None
 
@@ -136,11 +135,11 @@ class RequestsClient(HTTPClient):
             except TypeError, e:
                 raise TypeError(
                     'Warning: It looks like your installed version of the '
-                    '"requests" library is not compatible with Stripe\'s '
-                    'usage thereof. (HINT: The most likely cause is that '
-                    'your "requests" library is out of date. You can fix '
-                    'that by running "pip install -U requests".) The '
-                    'underlying error was: %s' % (e,))
+                    '"requests" library is not compatible with our usage.'
+                    '(HINT: The most likely cause is that your "requests" '
+                    'library is out of date. You can fix that by running '
+                    '"pip install -U requests".)'
+                    '\n\nThe underlying error was: %s' % (e,))
 
             # This causes the content to actually be read, which could cause
             # e.g. a socket timeout. TODO: The other fetch methods probably
