@@ -10,6 +10,10 @@ class CKAPIConnectionError(RuntimeError):
     "A problem with the HTTPS connection to the Coinkite server"
     pass
 
+class CKGatewayTimeout(RuntimeError):
+    "A problem with the CF to Coinkite connection: 504"
+    pass
+
 class CKJSONErrorBase(object):
     "See self.json for error details, as returned by the server"
     def __init__(self, json):

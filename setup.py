@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'coinkite-api',
-    version = '1.0.0',
+    version = '1.0.1',
     description = 'Coinkite API (Python binding)',
-    long_description = "Provides the fully-featured reference API wrapper for Coinkite's powerful Bitcoin (and Litecoin/Blackcoin) services. Works with Google App Engine and normal Python server-side applications. Also includes a simple CLI program to ease experimental use of cURL with the Coinkite API.",
+    long_description = "Provides this fully-featured reference API wrapper for Coinkite's powerful Bitcoin (and Litecoin/Blackcoin) services. Works with Google App Engine and normal Python server-side applications. Also includes a simple CLI program to ease experimental use of cURL with the Coinkite API.",
     author = 'Coinkite Inc.',
     author_email = 'support@coinkite.com',
     license = 'BSD',

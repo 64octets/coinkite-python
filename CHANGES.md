@@ -1,3 +1,8 @@
+Sep 10, 2015 - Version 1.0.1
+----------------------------
+- Handle 504 errors better; raises CKGatewayTimeout exception and doesn't parse HTML as JSON
+
+
 Jan 5, 2015
 -----------
 - Metadata and `setup.py` added to support Pypi

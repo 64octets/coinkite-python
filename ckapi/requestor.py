@@ -13,7 +13,7 @@ from hmac import HMAC
 from hashlib import sha256
 from urlparse import urljoin, urlparse
 from urllib import urlencode
-from exc import CKArgumentError, CKServerSideError, CKMissingError
+from exc import CKArgumentError, CKServerSideError, CKMissingError, CKGatewayTimeout
 
 logger = logging.getLogger('ckapi')
 
@@ -78,6 +78,9 @@ class CKRequestor(object):
                 hdrs.update(self._auth_headers(endpt))
 
             body, status = self.client.request(method, url, hdrs, data)
+
+            if status == 504:
+                raise CKGatewayTimeout()
         
             # decode JSON
             body = json_decoder.decode(body)
@@ -91,7 +94,7 @@ class CKRequestor(object):
 
         if status == 400:
             raise CKArgumentError(body)
-        if status == 404:
+        elif status == 404:
             raise CKMissingError(body)
         elif status != 200:
             raise CKServerSideError(body)
